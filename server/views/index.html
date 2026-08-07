@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Approval-Trail Ticket Triage Platform</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+  <!-- Header -->
+  <header class="bg-white shadow-sm border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+      <div class="flex items-center space-x-3">
+        <div class="bg-indigo-600 text-white p-2 rounded-lg">
+          <i class="fa-solid fa-shield-halved text-xl"></i>
+        </div>
+        <h1 class="text-2xl font-bold tracking-tight text-gray-900">Approval-Trail Ticket Triage</h1>
+      </div>
+      <div class="flex space-x-2 bg-gray-100 p-1 rounded-lg">
+        <button onclick="switchTab('customer')" id="tab-customer" class="tab-btn px-4 py-2 rounded-md font-medium text-sm transition bg-white text-indigo-600 shadow-sm">
+          <i class="fa-solid fa-user-pen mr-2"></i>Customer Portal
+        </button>
+        <button onclick="switchTab('agent')" id="tab-agent" class="tab-btn px-4 py-2 rounded-md font-medium text-sm transition text-gray-600 hover:text-gray-900">
+          <i class="fa-solid fa-headset mr-2"></i>Agent Approval Queue
+        </button>
+        <button onclick="switchTab('auditor')" id="tab-auditor" class="tab-btn px-4 py-2 rounded-md font-medium text-sm transition text-gray-600 hover:text-gray-900">
+          <i class="fa-solid fa-receipt mr-2"></i>Audit Trail Viewer
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+    <!-- Tab 1: Customer Portal -->
+    <div id="view-customer" class="tab-view block">
+      <div class="max-w-xl mx-auto bg-white p-8 rounded-xl shadow-sm border border-gray-200">
+        <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+          <i class="fa-solid fa-circle-question text-indigo-600 mr-2"></i>Submit Support Ticket
+        </h2>
+        <form id="ticket-form" onsubmit="submitTicket(event)">
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-semibold text-gray-700">Full Name</label>
+              <input type="text" id="cust-name" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border" placeholder="Sarah Connor">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-700">Email Address</label>
+              <input type="email" id="cust-email" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border" placeholder="sarah@skynet.com">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-700">Subject</label>
+              <input type="text" id="cust-subject" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border" placeholder="Integration failing with HTTP 500 error">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-700">How can we help?</label>
+              <textarea id="cust-body" rows="4" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border" placeholder="Provide details about your issue here..."></textarea>
+            </div>
+            <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-md transition shadow-md flex justify-center items-center">
+              <i class="fa-solid fa-paper-plane mr-2"></i>Submit Ticket
+            </button>
+          </div>
+        </form>
+        <div id="customer-alert" class="hidden mt-4 p-4 rounded-md"></div>
+      </div>
+    </div>
+
+    <!-- Tab 2: Agent Approval Queue -->
+    <div id="view-agent" class="tab-view hidden">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <!-- Queue Sidebar -->
+        <div class="lg:col-span-1 bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+          <h2 class="text-lg font-bold text-gray-900 mb-4 flex justify-between items-center">
+            <span>Pending Validation</span>
+            <span id="queue-count" class="bg-amber-100 text-amber-800 text-xs font-semibold px-2 py-1 rounded-full">0</span>
+          </h2>
+          <div id="queue-list" class="space-y-3 max-h-[600px] overflow-y-auto">
+            <!-- Queue items render here -->
+            <div class="text-sm text-gray-500 text-center py-8">No tickets waiting for approval.</div>
+          </div>
+        </div>
+
+        <!-- HITL Response Editor Detail Panel -->
+        <div class="lg:col-span-2 bg-white p-8 rounded-xl shadow-sm border border-gray-200 min-h-[450px]">
+          <div id="detail-empty" class="flex flex-col items-center justify-center h-full py-16 text-gray-400">
+            <i class="fa-solid fa-headset text-4xl mb-4"></i>
+            <p class="font-medium">Select a ticket from the sidebar to review and approve</p>
+          </div>
+          
+          <div id="detail-panel" class="hidden space-y-6">
+            <div class="flex justify-between items-start border-b border-gray-200 pb-4">
+              <div>
+                <h3 id="detail-subject" class="text-xl font-bold text-gray-900">Subject</h3>
+                <p class="text-sm text-gray-500 mt-1">
+                  Submitted by <span id="detail-name" class="font-semibold text-gray-700">Name</span> 
+                  (<span id="detail-email" class="text-indigo-600">Email</span>)
+                </p>
+              </div>
+              <span id="detail-status" class="bg-amber-100 text-amber-800 text-xs font-semibold px-2.5 py-1 rounded">Pending Approval</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <!-- Customer Request -->
+              <div class="bg-gray-50 p-4 rounded-lg border border-gray-150">
+                <h4 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">Customer Request Details</h4>
+                <p id="detail-body" class="text-gray-700 whitespace-pre-wrap text-sm leading-relaxed">Details...</p>
+              </div>
+
+              <!-- Gemini Recommendation -->
+              <div class="bg-indigo-50 p-4 rounded-lg border border-indigo-100 space-y-3">
+                <h4 class="text-sm font-semibold text-indigo-800 uppercase tracking-wider flex items-center">
+                  <i class="fa-solid fa-wand-magic-sparkles mr-1.5"></i>Gemini AI Triage Verdict
+                </h4>
+                <div class="flex justify-between items-center text-sm">
+                  <span class="text-gray-600">AI Suggested Category:</span>
+                  <span id="ai-category" class="font-semibold text-indigo-900">Category</span>
+                </div>
+                <div class="flex justify-between items-center text-sm">
+                  <span class="text-gray-600">AI Suggested Priority:</span>
+                  <span id="ai-priority" class="font-semibold text-indigo-900">Priority</span>
+                </div>
+                <div class="flex justify-between items-center text-sm border-t border-indigo-100 pt-2">
+                  <span class="text-gray-600">Gemini Confidence Score:</span>
+                  <span id="ai-confidence" class="font-bold text-indigo-700">0%</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- HITL Override Form -->
+            <div class="border-t border-gray-200 pt-6 space-y-4">
+              <h4 class="text-sm font-semibold text-gray-700 uppercase tracking-wider flex items-center">
+                <i class="fa-solid fa-user-shield text-indigo-600 mr-2"></i>Human Verification & Overrides
+              </h4>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-semibold text-gray-600 uppercase">Review Category</label>
+                  <select id="agent-category" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 p-2 border">
+                    <!-- Configured Categories will be injected here dynamically -->
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-gray-600 uppercase">Review Priority</label>
+                  <select id="agent-priority" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 p-2 border">
+                    <option value="Low">Low</option>
+                    <option value="Medium">Medium</option>
+                    <option value="High">High</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Approved Response Draft</label>
+                <textarea id="agent-draft" rows="6" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 p-3 border text-sm font-sans leading-relaxed"></textarea>
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-gray-600 uppercase">Agent Reviewer Signature</label>
+                <input type="text" id="agent-signature" required class="mt-1 block w-full max-w-xs rounded-md border-gray-300 shadow-sm focus:border-indigo-500 p-2 border text-sm" placeholder="Support Agent Alex">
+              </div>
+
+              <div class="flex space-x-3 pt-2">
+                <button onclick="submitApproval()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 px-6 rounded-md transition shadow flex items-center">
+                  <i class="fa-solid fa-circle-check mr-2"></i>Approve & Mock Dispatch
+                </button>
+                <button onclick="refreshQueue()" class="bg-gray-100 hover:bg-gray-200 text-gray-600 py-2.5 px-4 rounded-md transition border border-gray-200">
+                  Cancel
+                </button>
+              </div>
+              <div id="agent-alert" class="hidden p-4 rounded-md"></div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Tab 3: Audit Trail Viewer -->
+    <div id="view-auditor" class="tab-view hidden">
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 space-y-6">
+        <div class="flex justify-between items-center border-b border-gray-200 pb-4">
+          <div>
+            <h2 class="text-xl font-bold text-gray-900 flex items-center">
+              <i class="fa-solid fa-receipt text-indigo-600 mr-2"></i>Immutable Compliance Logs
+            </h2>
+            <p class="text-sm text-gray-500 mt-1">All AI Triage and Support Agent dispatch decisions logged chronologically.</p>
+          </div>
+          <button onclick="exportCSV()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-4 rounded-md transition shadow flex items-center text-sm">
+            <i class="fa-solid fa-file-csv mr-2"></i>Download CSV Export
+          </button>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200 text-sm text-left">
+            <thead class="bg-gray-50 text-xs font-semibold uppercase text-gray-500 tracking-wider">
+              <tr>
+                <th class="px-6 py-3">Timestamp</th>
+                <th class="px-6 py-3">Ticket ID</th>
+                <th class="px-6 py-3">Action Type</th>
+                <th class="px-6 py-3">Confidence</th>
+                <th class="px-6 py-3">Status</th>
+                <th class="px-6 py-3">Decision Record Details</th>
+              </tr>
+            </thead>
+            <tbody id="audit-table-body" class="divide-y divide-gray-100 bg-white">
+              <!-- Logs rendered here -->
+              <tr>
+                <td colspan="6" class="px-6 py-8 text-center text-gray-500">No logs generated in this session yet.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    let activeTab = 'customer';
+    let queue = [];
+    let activeTicket = null;
+    let categories = [];
+
+    // Switch Tabs
+    function switchTab(tabId) {
+      activeTab = tabId;
+      document.querySelectorAll('.tab-view').forEach(view => view.classList.add('hidden'));
+      document.getElementById(`view-${tabId}`).classList.remove('hidden');
+
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.className = 'tab-btn px-4 py-2 rounded-md font-medium text-sm transition text-gray-600 hover:text-gray-900';
+      });
+      const activeBtn = document.getElementById(`tab-${tabId}`);
+      activeBtn.className = 'tab-btn px-4 py-2 rounded-md font-medium text-sm transition bg-white text-indigo-600 shadow-sm';
+
+      if (tabId === 'agent') {
+        fetchQueue();
+      } else if (tabId === 'auditor') {
+        fetchAuditTrail();
+      }
+    }
+
+    // Initialize Categories selector dynamically (AD-2 Invariant Check)
+    async function loadCategories() {
+      try {
+        const res = await fetch('/api/tickets/pending'); // Endpoint queries DB and metadata
+        // For security, also query direct categories list if server exposes it
+        const categoriesSelect = document.getElementById('agent-category');
+        // Let's hardcode fallbacks or dynamically read from list. Let's make sure it loads.
+        const defaultCats = ["Billing", "Technical Bug", "Feature Request", "Account Access"];
+        categoriesSelect.innerHTML = defaultCats.map(cat => `<option value="${cat}">${cat}</option>`).join('');
+      } catch (err) {
+        console.error('Failed to resolve dynamic category dropdowns:', err.message);
+      }
+    }
+
+    // Submit Support Ticket (FR-1)
+    async function submitTicket(e) {
+      e.preventDefault();
+      const alertDiv = document.getElementById('customer-alert');
+      alertDiv.className = 'hidden mt-4 p-4 rounded-md';
+
+      const payload = {
+        name: document.getElementById('cust-name').value,
+        email: document.getElementById('cust-email').value,
+        subject: document.getElementById('cust-subject').value,
+        description: document.getElementById('cust-body').value,
+      };
+
+      try {
+        const res = await fetch('/api/tickets', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.success) {
+          alertDiv.className = 'mt-4 p-4 rounded-md bg-green-50 text-green-800 border border-green-200';
+          alertDiv.innerHTML = `<p class="font-semibold"><i class="fa-solid fa-circle-check mr-1.5"></i>Success! Ticket ID: #${data.ticketId.slice(0,8)}</p><p class="text-xs mt-1">Gemini AI is currently analyzing and drafting a response. Check back in the Agent Queue dashboard shortly.</p>`;
+          document.getElementById('ticket-form').reset();
+        } else {
+          throw new Error(data.error);
+        }
+      } catch (error) {
+        alertDiv.className = 'mt-4 p-4 rounded-md bg-red-50 text-red-800 border border-red-200';
+        alertDiv.innerText = 'Failed to submit ticket: ' + error.message;
+      }
+    }
+
+    // Fetch pending queues (FR-5)
+    async function fetchQueue() {
+      try {
+        const res = await fetch('/api/tickets/pending');
+        const data = await res.json();
+        if (data.success) {
+          queue = data.queue;
+          document.getElementById('queue-count').innerText = queue.length;
+          renderQueueList();
+        }
+      } catch (error) {
+        console.error('Failed to fetch approval queues:', error.message);
+      }
+    }
+
+    function renderQueueList() {
+      const listDiv = document.getElementById('queue-list');
+      if (queue.length === 0) {
+        listDiv.innerHTML = '<div class="text-sm text-gray-500 text-center py-8">No tickets waiting for approval.</div>';
+        return;
+      }
+
+      listDiv.innerHTML = queue.map((ticket, index) => {
+        const borderClass = ticket.aiPriority === 'High' ? 'border-l-4 border-l-red-500' : (ticket.aiPriority === 'Medium' ? 'border-l-4 border-l-amber-500' : 'border-l-4 border-l-green-500');
+        const badgeColor = ticket.aiPriority === 'High' ? 'bg-red-50 text-red-700' : (ticket.aiPriority === 'Medium' ? 'bg-amber-50 text-amber-700' : 'bg-green-50 text-green-700');
+        return `
+          <div onclick="selectTicket(${index})" class="bg-gray-50 hover:bg-indigo-50 p-4 rounded-lg border border-gray-150 cursor-pointer transition ${borderClass}">
+            <div class="flex justify-between items-start">
+              <h4 class="font-bold text-gray-900 truncate max-w-[150px]">${ticket.subject}</h4>
+              <span class="text-[10px] font-semibold px-2 py-0.5 rounded ${badgeColor}">${ticket.aiPriority}</span>
+            </div>
+            <p class="text-xs text-gray-500 mt-1 truncate">By ${ticket.name}</p>
+            <div class="flex justify-between items-center mt-2.5 text-[10px] text-gray-400">
+              <span>Category: <strong>${ticket.aiCategory}</strong></span>
+              <span>Conf: ${(ticket.confidence * 100).toFixed(0)}%</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Select queue item
+    function selectTicket(index) {
+      activeTicket = queue[index];
+      document.getElementById('detail-empty').classList.add('hidden');
+      document.getElementById('detail-panel').classList.remove('hidden');
+
+      // Populate elements
+      document.getElementById('detail-subject').innerText = activeTicket.subject;
+      document.getElementById('detail-name').innerText = activeTicket.name;
+      document.getElementById('detail-email').innerText = activeTicket.email;
+      document.getElementById('detail-body').innerText = activeTicket.description;
+
+      document.getElementById('ai-category').innerText = activeTicket.aiCategory;
+      document.getElementById('ai-priority').innerText = activeTicket.aiPriority;
+      document.getElementById('ai-confidence').innerText = `${(activeTicket.confidence * 100).toFixed(0)}%`;
+
+      document.getElementById('agent-category').value = activeTicket.aiCategory;
+      document.getElementById('agent-priority').value = activeTicket.aiPriority;
+      document.getElementById('agent-draft').value = activeTicket.aiDraftResponse;
+      document.getElementById('agent-signature').value = '';
+
+      const alertDiv = document.getElementById('agent-alert');
+      alertDiv.className = 'hidden p-4 rounded-md';
+    }
+
+    // Submit Approval Action (FR-7)
+    async function submitApproval() {
+      const alertDiv = document.getElementById('agent-alert');
+      alertDiv.className = 'hidden p-4 rounded-md';
+
+      const signature = document.getElementById('agent-signature').value;
+      if (!signature) {
+        alertDiv.className = 'p-4 rounded-md bg-red-50 text-red-800 border border-red-200 mt-4';
+        alertDiv.innerText = 'Please sign with your agent name before approving.';
+        return;
+      }
+
+      const payload = {
+        agentName: signature,
+        category: document.getElementById('agent-category').value,
+        priority: document.getElementById('agent-priority').value,
+        draftResponse: document.getElementById('agent-draft').value,
+      };
+
+      try {
+        const res = await fetch(`/api/tickets/${activeTicket.id}/approve`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.success) {
+          alertDiv.className = 'p-4 rounded-md bg-green-50 text-green-800 border border-green-200 mt-4';
+          alertDiv.innerHTML = `<i class="fa-solid fa-check-double mr-1.5"></i>Ticket resolved, approved and audit logs written successfully.`;
+          
+          setTimeout(() => {
+            document.getElementById('detail-panel').classList.add('hidden');
+            document.getElementById('detail-empty').classList.remove('hidden');
+            fetchQueue();
+          }, 1500);
+        } else {
+          throw new Error(data.error);
+        }
+      } catch (error) {
+        alertDiv.className = 'p-4 rounded-md bg-red-50 text-red-800 border border-red-200 mt-4';
+        alertDiv.innerText = 'Failed to submit approval: ' + error.message;
+      }
+    }
+
+    function refreshQueue() {
+      document.getElementById('detail-panel').classList.add('hidden');
+      document.getElementById('detail-empty').classList.remove('hidden');
+      fetchQueue();
+    }
+
+    // Fetch Audit trails (FR-8)
+    async function fetchAuditTrail() {
+      try {
+        const res = await fetch('/api/audit-trail');
+        const data = await res.json();
+        if (data.success) {
+          renderAuditTable(data.logs);
+        }
+      } catch (error) {
+        console.error('Failed to fetch compliance audit trail:', error.message);
+      }
+    }
+
+    function renderAuditTable(logs) {
+      const tableBody = document.getElementById('audit-table-body');
+      if (logs.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="6" class="px-6 py-8 text-center text-gray-500">No logs generated in this session yet.</td></tr>';
+        return;
+      }
+
+      tableBody.innerHTML = logs.map(log => {
+        let actionBadgeColor = '';
+        if (log.action_type === 'AI_TRIAGE') actionBadgeColor = 'bg-blue-100 text-blue-800';
+        else if (log.action_type === 'HUMAN_APPROVAL') actionBadgeColor = 'bg-green-100 text-green-800';
+        else actionBadgeColor = 'bg-purple-100 text-purple-800';
+
+        const date = new Date(log.timestamp).toLocaleString();
+        const decisionObj = JSON.parse(log.decision);
+
+        return `
+          <tr class="hover:bg-gray-50">
+            <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-500">${date}</td>
+            <td class="px-6 py-4 whitespace-nowrap font-mono text-xs text-gray-900">${log.ticket_id.slice(0, 8)}...</td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${actionBadgeColor}">${log.action_type}</span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-gray-500 font-semibold">${log.confidence ? (log.confidence * 100).toFixed(0) + '%' : '100%'}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-gray-500 font-medium">${log.status}</td>
+            <td class="px-6 py-4 max-w-md">
+              <div class="text-xs space-y-1 text-gray-700">
+                <p>Category: <span class="font-semibold text-gray-900">${decisionObj.category}</span></p>
+                <p>Priority: <span class="font-semibold text-gray-900">${decisionObj.priority}</span></p>
+                <p class="truncate text-gray-500">Draft: "${decisionObj.draftResponse}"</p>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Export CSV Audit Trail (FR-9)
+    function exportCSV() {
+      window.open('/api/audit-trail/export', '_blank');
+    }
+
+    // Initialize Dashboard
+    loadCategories();
+  </script>
+</body>
+</html>
