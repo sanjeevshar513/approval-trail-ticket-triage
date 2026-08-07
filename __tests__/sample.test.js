@@ -1,1 +1,1 @@
-test('sanity check', () => { expect(1 + 1).toBe(2); })
+test('sanity check', () => { expect(1 + 1).toBe(2); });
