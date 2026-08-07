@@ -7,7 +7,7 @@
     "doc": "docs"
   },
   "scripts": {
-    "test":"cross-env NODE_ENV=test jest"
+    "test": "cross-env NODE_ENV=test jest"
   },
   "repository": {
     "type": "git",
@@ -29,6 +29,7 @@
     "uuid": "^14.0.1"
   },
   "devDependencies": {
+    "cross-env": "^10.1.0",
     "jest": "^30.4.2"
   }
 }

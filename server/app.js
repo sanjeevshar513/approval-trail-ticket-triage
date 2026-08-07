@@ -169,11 +169,6 @@ app.get('/api/audit-trail/export', async (req, res) => {
 // Serve frontend views directories
 app.use(express.static(path.join(__dirname, 'views')));
 
-// Catch-all route to serve dashboard views
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'views', 'index.html'));
-});
-
 // Launch Server if executed directly
 if (require.main === module) {
   app.listen(port, () => {
