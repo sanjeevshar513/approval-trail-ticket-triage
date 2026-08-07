@@ -1,0 +1,1 @@
+ # Agent Rules\n\nThis project uses BMAD-METHOD with Cline. Agents must: (1) never hardcode ticket categories — keep them in config, (2) log every AI decision to the approval trail before acting, (3) never auto-send anything without human approval, (4) follow the architecture doc in docs/ for all structural decisions.
