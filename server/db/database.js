@@ -2,7 +2,7 @@ const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 const fs = require('fs');
 
-const dbPath = path.resolve(__dirname, 'triage.db');
+ const dbPath = process.env.NODE_ENV === 'test' ? ':memory:' : path.join(__dirname, 'triage.db');
 
 // Connect to SQLite Database
 const db = new sqlite3.Database(dbPath, (err) => {
