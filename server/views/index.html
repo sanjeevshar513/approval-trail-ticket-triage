@@ -4,13 +4,27 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Approval-Trail Ticket Triage Platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-50 text-gray-800">
+<body class="bg-gradient-to-br from-indigo-50/50 via-slate-50 to-indigo-50/30 min-h-screen text-gray-800 font-sans antialiased selection:bg-indigo-500 selection:text-white">
 
   <!-- Header -->
-  <header class="bg-white shadow-sm border-b border-gray-200">
+  <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm border-b border-gray-200/50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
       <div class="flex items-center space-x-3">
         <div class="bg-indigo-600 text-white p-2 rounded-lg">
@@ -37,7 +51,53 @@
 
     <!-- Tab 1: Customer Portal -->
     <div id="view-customer" class="tab-view block">
-      <div class="max-w-xl mx-auto bg-white p-8 rounded-xl shadow-sm border border-gray-200">
+      <!-- App Landing / Overview Section -->
+      <div class="max-w-4xl mx-auto mb-12 text-center">
+        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-800 mb-4 shadow-sm">
+          <i class="fa-solid fa-wand-magic-sparkles mr-1.5"></i> Human-in-the-Loop AI Support
+        </span>
+        <h2 class="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl mb-4">
+          Approval-Trail Ticket Triage
+        </h2>
+        <p class="text-lg text-gray-600 font-medium max-w-2xl mx-auto mb-5">
+          AI-powered ticket intelligence, fully guided by human approval.
+        </p>
+        <p class="text-sm text-gray-500 max-w-3xl mx-auto leading-relaxed mb-8">
+          Tackle customer support queues with confidence. Incoming tickets are instantly analyzed, categorized, and drafted by our integrated Gemini AI. But nothing is sent or dispatched automatically—every response requires human review, approval, and an immutable compliance signature.
+        </p>
+        
+        <div class="flex justify-center mb-10">
+          <a href="#ticket-form-section" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg transition shadow-lg hover:shadow-xl flex items-center transform hover:-translate-y-0.5">
+            <i class="fa-solid fa-pen-to-square mr-2"></i> Submit a Support Ticket
+          </a>
+        </div>
+
+        <!-- How it Works Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-left">
+          <div class="bg-white/70 backdrop-blur-md p-5 rounded-xl border border-gray-200/50 shadow-md">
+            <div class="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center mb-3 font-extrabold text-lg">1</div>
+            <h3 class="text-sm font-bold text-gray-900 mb-1">Submit Ticket</h3>
+            <p class="text-xs text-gray-500 leading-relaxed">Customers file requests through our secure, simple interface.</p>
+          </div>
+          <div class="bg-white/70 backdrop-blur-md p-5 rounded-xl border border-gray-200/50 shadow-md">
+            <div class="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center mb-3 font-extrabold text-lg">2</div>
+            <h3 class="text-sm font-bold text-gray-900 mb-1">AI Triage & Draft</h3>
+            <p class="text-xs text-gray-500 leading-relaxed">AI instantly classifies categories, priorities, and drafts a resolution.</p>
+          </div>
+          <div class="bg-white/70 backdrop-blur-md p-5 rounded-xl border border-gray-200/50 shadow-md">
+            <div class="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center mb-3 font-extrabold text-lg">3</div>
+            <h3 class="text-sm font-bold text-gray-900 mb-1">Human Review</h3>
+            <p class="text-xs text-gray-500 leading-relaxed">Support agents review drafts and override details with absolute control.</p>
+          </div>
+          <div class="bg-white/70 backdrop-blur-md p-5 rounded-xl border border-gray-200/50 shadow-md">
+            <div class="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center mb-3 font-extrabold text-lg">4</div>
+            <h3 class="text-sm font-bold text-gray-900 mb-1">Compliance Log</h3>
+            <p class="text-xs text-gray-500 leading-relaxed">Every dispatch and action is immutably logged for complete compliance.</p>
+          </div>
+        </div>
+      </div>
+
+      <div id="ticket-form-section" class="max-w-xl mx-auto bg-white/80 backdrop-blur-md p-8 rounded-xl shadow-lg border border-gray-200/50 scroll-mt-24">
         <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
           <i class="fa-solid fa-circle-question text-indigo-600 mr-2"></i>Submit Support Ticket
         </h2>
@@ -73,7 +133,7 @@
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
         <!-- Queue Sidebar -->
-        <div class="lg:col-span-1 bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+        <div class="lg:col-span-1 bg-white/80 backdrop-blur-md p-6 rounded-xl shadow-lg border border-gray-200/50">
           <h2 class="text-lg font-bold text-gray-900 mb-4 flex justify-between items-center">
             <span>Pending Validation</span>
             <span id="queue-count" class="bg-amber-100 text-amber-800 text-xs font-semibold px-2 py-1 rounded-full">0</span>
@@ -85,7 +145,7 @@
         </div>
 
         <!-- HITL Response Editor Detail Panel -->
-        <div class="lg:col-span-2 bg-white p-8 rounded-xl shadow-sm border border-gray-200 min-h-[450px]">
+        <div class="lg:col-span-2 bg-white/80 backdrop-blur-md p-8 rounded-xl shadow-lg border border-gray-200/50 min-h-[450px]">
           <div id="detail-empty" class="flex flex-col items-center justify-center h-full py-16 text-gray-400">
             <i class="fa-solid fa-headset text-4xl mb-4"></i>
             <p class="font-medium">Select a ticket from the sidebar to review and approve</p>
@@ -181,7 +241,7 @@
 
     <!-- Tab 3: Audit Trail Viewer -->
     <div id="view-auditor" class="tab-view hidden">
-      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 space-y-6">
+      <div class="bg-white/80 backdrop-blur-md p-6 rounded-xl shadow-lg border border-gray-200/50 space-y-6">
         <div class="flex justify-between items-center border-b border-gray-200 pb-4">
           <div>
             <h2 class="text-xl font-bold text-gray-900 flex items-center">
