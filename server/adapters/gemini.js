@@ -20,6 +20,14 @@ function getCategories() {
 
 // AI Triage Generator
 async function runTriage(ticket) {
+  if (process.env.MOCK_AI === 'true') {
+    return {
+      category: 'General Inquiry',
+      priority: 'Medium',
+      draftResponse: 'Thank you for reaching out. We have received your ticket and are reviewing it. A member of our team will follow up shortly with next steps.'
+    };
+  }
+
   const categories = getCategories();
   const apiKey = process.env.GEMINI_API_KEY;
 
