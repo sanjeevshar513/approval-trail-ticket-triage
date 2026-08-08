@@ -267,13 +267,23 @@ app.get('/api/audit-trail/export', async (req, res) => {
   }
 });
 
+// Health Check Endpoints for Railway / Cloud Deployment Platform Health Checks
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+app.get('/api/health', (req, res) => {
+  res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
 // Serve frontend views directories
 app.use(express.static(path.join(__dirname, 'views')));
 
 // Launch Server if executed directly
 if (require.main === module) {
-  app.listen(port, () => {
-    console.log(`[BOOT] Server successfully listening at http://localhost:${port}`);
+  const host = process.env.HOST || '0.0.0.0';
+  app.listen(port, host, () => {
+    console.log(`[BOOT] Server successfully listening on http://${host}:${port}`);
   });
 }
 
