@@ -4,10 +4,10 @@ const { initializeDatabase, runQuery, getQuery, allQuery, dbPath } = require('..
 const { createTicket, triggerTriage, approveTicket } = require('../server/services/triage');
 const { getSentEmails } = require('../server/adapters/email');
 
-describe('Approval-Trail Ticket Triage Invariant Tests', () => {
+describe('Approval-Trail Ticket Triage Invariant Tests (LowDB Storage)', () => {
   
   beforeAll(async () => {
-    // Delete database file if exists to start fresh
+    // Delete test database file if exists to start fresh
     if (fs.existsSync(dbPath)) {
       try {
         fs.unlinkSync(dbPath);
@@ -15,23 +15,19 @@ describe('Approval-Trail Ticket Triage Invariant Tests', () => {
         // file locked, ignoring
       }
     }
-    // Initialize schema and triggers
-    initializeDatabase();
-    // Wait briefly for SQLite to complete file sync
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    // Initialize schema/data structure
+    await initializeDatabase();
   });
 
-  afterAll((done) => {
-    // Clean up
-    const sqlitePath = path.resolve(__dirname, '../server/db/triage.db');
-    if (fs.existsSync(sqlitePath)) {
+  afterAll(async () => {
+    // Clean up test database file
+    if (fs.existsSync(dbPath)) {
       try {
-        fs.unlinkSync(sqlitePath);
+        fs.unlinkSync(dbPath);
       } catch (err) {
         // file locked, ignoring
       }
     }
-    done();
   });
 
   test('Invariant AD-2: Categories configuration must be present and readable', () => {
@@ -108,7 +104,7 @@ describe('Approval-Trail Ticket Triage Invariant Tests', () => {
     expect(humanLogs[0].status).toBe('Approved');
   });
 
-  test('Invariant AD-4: SQLite triggers physically block UPDATE and DELETE on audit_trail table', async () => {
+  test('Invariant AD-4: LowDB storage physically blocks UPDATE and DELETE on audit_trail table', async () => {
     // Submit a ticket and generate triage logs
     const id = await createTicket('David Lightman', 'david@wopr.org', 'WOPR integration fails', 'Access denied to global thermonuclear games');
     await triggerTriage(id);
@@ -117,7 +113,7 @@ describe('Approval-Trail Ticket Triage Invariant Tests', () => {
     const log = await getQuery('SELECT * FROM audit_trail WHERE ticket_id = ?', [id]);
     expect(log).toBeDefined();
 
-    // 1. Attempt to UPDATE the audit_trail row - Expect Trigger Failure
+    // 1. Attempt to UPDATE the audit_trail row - Expect Failure
     let updateError = null;
     try {
       await runQuery('UPDATE audit_trail SET status = ? WHERE ticket_id = ?', ['Tampered', id]);
@@ -127,7 +123,7 @@ describe('Approval-Trail Ticket Triage Invariant Tests', () => {
     expect(updateError).toBeDefined();
     expect(updateError.message).toContain('Updates are forbidden on audit_trail table');
 
-    // 2. Attempt to DELETE the audit_trail row - Expect Trigger Failure
+    // 2. Attempt to DELETE the audit_trail row - Expect Failure
     let deleteError = null;
     try {
       await runQuery('DELETE FROM audit_trail WHERE ticket_id = ?', [id]);

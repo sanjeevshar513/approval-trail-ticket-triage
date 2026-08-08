@@ -1,0 +1,177 @@
+{
+  "tickets": [
+    {
+      "id": "e44b827c-ff95-4a9f-bb86-0da21caa4c9e",
+      "email": "alice@blackmesa.org",
+      "name": "Alice Vance",
+      "subject": "Unable to reset account password via magic link",
+      "description": "I requested a password reset email twice today, but clicking the magic link leads to an expired token error page immediately.",
+      "status": "Pending Approval",
+      "created_at": "2026-08-08T10:49:27.291Z"
+    },
+    {
+      "id": "af873066-cab1-4142-91b7-6eca00b6d6be",
+      "email": "marcus@museum.edu",
+      "name": "Marcus Brody",
+      "subject": "Double charged for annual subscription renewal",
+      "description": "My credit card statement shows two identical charges of $199.00 on August 5th. Please refund the duplicate transaction.",
+      "status": "Pending Approval",
+      "created_at": "2026-08-08T10:59:27.291Z"
+    },
+    {
+      "id": "a87c5432-ca24-4976-9ff1-d49c0adf9f6b",
+      "email": "elena@techcorp.io",
+      "name": "Elena Rostova",
+      "subject": "CSV export truncates special characters in UTF-8",
+      "description": "When exporting the audit logs to CSV, non-ASCII accent characters like \"é\" and \"ñ\" get garbled into replacement symbols.",
+      "status": "Pending Approval",
+      "created_at": "2026-08-08T11:09:27.291Z"
+    },
+    {
+      "id": "0d7c6152-f9aa-4f45-9a1b-c5a2fff445a0",
+      "email": "devon@foundation.org",
+      "name": "Devon Miles",
+      "subject": "Add Dark Mode theme toggle to dashboard",
+      "description": "Our support team works late shifts and would greatly appreciate a native dark mode theme option in the agent queue panel.",
+      "status": "Pending Approval",
+      "created_at": "2026-08-08T11:19:27.291Z"
+    },
+    {
+      "id": "d9829248-05c6-4efd-b0ca-52886850587f",
+      "email": "sarah@skynet.com",
+      "name": "Sarah Connor",
+      "subject": "API returns HTTP 500 error when uploading large JSON payload",
+      "description": "Every POST request to /api/tickets with payloads larger than 50KB fails with an unhandled server error.",
+      "status": "Pending Approval",
+      "created_at": "2026-08-08T11:24:27.291Z"
+    },
+    {
+      "id": "56a01a82-7f13-4abc-b81d-4b9998d5aa8f",
+      "email": "arthur@camelot.co",
+      "name": "Arthur Pendelton",
+      "subject": "Need tax invoice for Q3 billing",
+      "description": "Please send the official VAT invoice for our Q3 corporate billing payment made last week.",
+      "status": "Pending Triage",
+      "created_at": "2026-08-08T11:26:27.291Z"
+    },
+    {
+      "id": "c7997cb7-e079-4338-9b7b-d8228b971499",
+      "email": "claire@dpn.org",
+      "name": "Claire Dearing",
+      "subject": "SSO login redirect loop with Okta SAML",
+      "description": "Users authenticating via SAML 2.0 Okta integration get trapped in a redirect loop after entering credentials.",
+      "status": "Pending Triage",
+      "created_at": "2026-08-08T11:29:27.291Z"
+    },
+    {
+      "id": "f41c77a5-11b0-4779-ae37-3018a576342c",
+      "email": "hugo@numbers48.com",
+      "name": "Hugo Reyes",
+      "subject": "Webhook notification delivery delay",
+      "description": "Webhook events for ticket status updates are arriving 15 to 20 minutes after the actual action occurred.",
+      "status": "Pending Triage",
+      "created_at": "2026-08-08T11:32:27.291Z"
+    },
+    {
+      "id": "86795158-b722-4abf-ac38-1fb4f424a383",
+      "email": "john@resistance.net",
+      "name": "John Connor",
+      "subject": "Updated payment method not reflecting on account",
+      "description": "I updated my billing card details yesterday, but the portal still displays my old expired Visa card.",
+      "status": "Resolved",
+      "created_at": "2026-08-08T09:34:27.291Z"
+    },
+    {
+      "id": "a71a0444-2dce-4299-8499-ad79739e2aeb",
+      "email": "david@wopr.org",
+      "name": "David Lightman",
+      "subject": "Requesting bulk export API endpoint",
+      "description": "We need a REST API endpoint to dump all ticket metrics into our internal analytics data lake nightly.",
+      "status": "Resolved",
+      "created_at": "2026-08-08T08:34:27.291Z"
+    }
+  ],
+  "audit_trail": [
+    {
+      "id": 1,
+      "timestamp": "2026-08-08T10:49:27.291Z",
+      "ticket_id": "e44b827c-ff95-4a9f-bb86-0da21caa4c9e",
+      "action_type": "AI_TRIAGE",
+      "decision": "{\"category\":\"Account Access\",\"priority\":\"High\",\"draftResponse\":\"Hello Alice,\\n\\nThank you for reporting this issue with password reset magic links. We have refreshed your security token. Please try requesting a new reset link now or let us know if the issue persists.\\n\\nBest regards,\\nAccounts Support Team\"}",
+      "confidence": 0.94,
+      "status": "Pending Approval"
+    },
+    {
+      "id": 2,
+      "timestamp": "2026-08-08T10:59:27.291Z",
+      "ticket_id": "af873066-cab1-4142-91b7-6eca00b6d6be",
+      "action_type": "AI_TRIAGE",
+      "decision": "{\"category\":\"Billing\",\"priority\":\"High\",\"draftResponse\":\"Hello Marcus,\\n\\nWe apologize for the duplicate charge on your account. I have initiated a refund for the second $199.00 transaction. It should reflect on your statement within 3-5 business days.\\n\\nBest regards,\\nBilling Support Team\"}",
+      "confidence": 0.98,
+      "status": "Pending Approval"
+    },
+    {
+      "id": 3,
+      "timestamp": "2026-08-08T11:09:27.291Z",
+      "ticket_id": "a87c5432-ca24-4976-9ff1-d49c0adf9f6b",
+      "action_type": "AI_TRIAGE",
+      "decision": "{\"category\":\"Technical Bug\",\"priority\":\"Medium\",\"draftResponse\":\"Hello Elena,\\n\\nThank you for bringing this UTF-8 encoding issue to our attention. Our engineering team is adding explicit UTF-8 BOM headers to the CSV exporter to resolve character garbling.\\n\\nBest regards,\\nEngineering Support Team\"}",
+      "confidence": 0.89,
+      "status": "Pending Approval"
+    },
+    {
+      "id": 4,
+      "timestamp": "2026-08-08T11:19:27.291Z",
+      "ticket_id": "0d7c6152-f9aa-4f45-9a1b-c5a2fff445a0",
+      "action_type": "AI_TRIAGE",
+      "decision": "{\"category\":\"Feature Request\",\"priority\":\"Low\",\"draftResponse\":\"Hello Devon,\\n\\nThank you for suggesting dark mode support! We have logged this request with our UI product design team for inclusion in an upcoming release cycle.\\n\\nBest regards,\\nProduct Design Team\"}",
+      "confidence": 0.91,
+      "status": "Pending Approval"
+    },
+    {
+      "id": 5,
+      "timestamp": "2026-08-08T11:24:27.291Z",
+      "ticket_id": "d9829248-05c6-4efd-b0ca-52886850587f",
+      "action_type": "AI_TRIAGE",
+      "decision": "{\"category\":\"Technical Bug\",\"priority\":\"High\",\"draftResponse\":\"Hello Sarah,\\n\\nThank you for the detailed bug report. We identified a request body parser limit configuration issue and are releasing a hotfix shortly.\\n\\nBest regards,\\nPlatform Engineering Team\"}",
+      "confidence": 0.95,
+      "status": "Pending Approval"
+    },
+    {
+      "id": 6,
+      "timestamp": "2026-08-08T09:34:27.291Z",
+      "ticket_id": "86795158-b722-4abf-ac38-1fb4f424a383",
+      "action_type": "AI_TRIAGE",
+      "decision": "{\"category\":\"Billing\",\"priority\":\"High\",\"draftResponse\":\"Hello John,\\n\\nWe updated your default payment profile to your new card. You can verify this now in your account billing settings.\"}",
+      "confidence": 0.92,
+      "status": "Pending Approval"
+    },
+    {
+      "id": 7,
+      "timestamp": "2026-08-08T09:44:27.291Z",
+      "ticket_id": "86795158-b722-4abf-ac38-1fb4f424a383",
+      "action_type": "HUMAN_APPROVAL",
+      "decision": "{\"category\":\"Billing\",\"priority\":\"High\",\"draftResponse\":\"Hello John,\\n\\nWe updated your default payment profile to your new card. You can verify this now in your account billing settings.\\n\\nBest regards,\\nAgent Alex\",\"approvedBy\":\"Agent Alex\"}",
+      "confidence": 1,
+      "status": "Approved"
+    },
+    {
+      "id": 8,
+      "timestamp": "2026-08-08T08:34:27.291Z",
+      "ticket_id": "a71a0444-2dce-4299-8499-ad79739e2aeb",
+      "action_type": "AI_TRIAGE",
+      "decision": "{\"category\":\"Account Access\",\"priority\":\"Low\",\"draftResponse\":\"Hello David,\\n\\nThank you for your inquiry regarding export options.\"}",
+      "confidence": 0.75,
+      "status": "Pending Approval"
+    },
+    {
+      "id": 9,
+      "timestamp": "2026-08-08T08:44:27.291Z",
+      "ticket_id": "a71a0444-2dce-4299-8499-ad79739e2aeb",
+      "action_type": "HUMAN_OVERRIDE",
+      "decision": "{\"category\":\"Feature Request\",\"priority\":\"Medium\",\"draftResponse\":\"Hello David,\\n\\nWe have escalated your bulk export API requirement to our Enterprise Integrations product manager.\\n\\nBest regards,\\nAgent Jordan\",\"approvedBy\":\"Agent Jordan\"}",
+      "confidence": 1,
+      "status": "Approved"
+    }
+  ]
+}

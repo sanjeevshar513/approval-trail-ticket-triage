@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "node server/app.js",
-    "test": "cross-env NODE_ENV=test jest",
+    "test": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest",
     "seed": "node server/db/seed.js"
   },
   "repository": {
@@ -27,7 +27,7 @@
     "@google/generative-ai": "^0.24.1",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
-    "sqlite3": "^6.0.1",
+    "lowdb": "^7.0.1",
     "uuid": "^14.0.1"
   },
   "devDependencies": {

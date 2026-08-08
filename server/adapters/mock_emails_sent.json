@@ -1,10 +1,10 @@
 [
   {
-    "ticketId": "3f0a0291-527d-45a1-bde2-0254922f001d",
+    "ticketId": "27768194-a19c-4b9c-ac1a-ae0a2e93a798",
     "recipient": "john@skynet.com",
     "subject": "RE: API Connection lost",
     "body": "Hello John, we corrected the server permissions. Please try again.",
-    "dispatchedAt": "2026-08-08T07:56:58.089Z",
+    "dispatchedAt": "2026-08-08T11:34:15.554Z",
     "agentSignature": "Agent Alex"
   }
 ]
