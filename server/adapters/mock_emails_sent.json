@@ -1,10 +1,10 @@
 [
   {
-    "ticketId": "b2090a46-aaf9-43c6-9d72-ea7dca83b3b7",
-    "recipient": "john@skynet.com",
-    "subject": "RE: API Connection lost",
-    "body": "Hello John, we corrected the server permissions. Please try again.",
-    "dispatchedAt": "2026-08-08T07:23:57.235Z",
-    "agentSignature": "Agent Alex"
+    "ticketId": "c9bc27e2-2eba-4392-8d42-43efae6b8a0c",
+    "recipient": "meera.nair@example.com",
+    "subject": "RE: Charged twice for my subscription",
+    "body": "Thank you for reaching out. We have received your ticket and are reviewing it. A member of our team will follow up shortly with next steps.",
+    "dispatchedAt": "2026-08-08T07:30:16.441Z",
+    "agentSignature": "Sanjeev"
   }
 ]
