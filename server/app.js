@@ -33,9 +33,11 @@ app.post('/api/tickets', async (req, res) => {
   const { name, email, subject, description } = req.body;
   try {
     const ticketId = await createTicket(name, email, subject, description);
-    res.status(201).json({ success: true, ticketId, message: 'Ticket received. Gemini is running triage...' });
+    await triggerTriage(ticketId);
+    res.status(201).json({ success: true, ticketId, message: 'Ticket received and triaged by Gemini.' });
   } catch (error) {
-    res.status(400).json({ success: false, error: error.message });
+    console.error('Ticket submission / AI triage error:', error.message);
+    res.status(500).json({ success: false, error: 'AI analysis failed, please try again: ' + error.message });
   }
 });
 
@@ -131,7 +133,106 @@ app.get('/api/audit-trail', async (req, res) => {
   }
 });
 
-// 6. Auditor CSV Log Exporter (FR-9)
+// 6. Live Dashboard Statistics API
+app.get('/api/stats', async (req, res) => {
+  try {
+    const configCategories = getCategories();
+
+    // Total tickets count
+    const totalRow = await getQuery('SELECT COUNT(*) as count FROM tickets');
+    const totalTickets = totalRow ? totalRow.count : 0;
+
+    // Pending approval count
+    const pendingRow = await getQuery("SELECT COUNT(*) as count FROM tickets WHERE status = 'Pending Approval'");
+    const pendingTickets = pendingRow ? pendingRow.count : 0;
+
+    // Reviewed tickets join logs
+    const reviewedLogs = await allQuery(
+      `SELECT a.*, t.created_at 
+       FROM audit_trail a
+       JOIN tickets t ON a.ticket_id = t.id
+       WHERE a.action_type IN ('HUMAN_APPROVAL', 'HUMAN_OVERRIDE')`
+    );
+
+    const reviewedTicketsCount = reviewedLogs.length;
+    let approvedCount = 0;
+    let overriddenCount = 0;
+    let totalTurnaroundMs = 0;
+
+    reviewedLogs.forEach((log) => {
+      if (log.action_type === 'HUMAN_APPROVAL') {
+        approvedCount++;
+      } else if (log.action_type === 'HUMAN_OVERRIDE') {
+        overriddenCount++;
+      }
+
+      const createdTime = new Date(log.created_at).getTime();
+      const approvedTime = new Date(log.timestamp).getTime();
+      if (!isNaN(createdTime) && !isNaN(approvedTime) && approvedTime >= createdTime) {
+        totalTurnaroundMs += (approvedTime - createdTime);
+      }
+    });
+
+    const approvalRate = reviewedTicketsCount > 0 
+      ? Math.round((approvedCount / reviewedTicketsCount) * 100) 
+      : 0;
+
+    const avgTurnaroundMs = reviewedTicketsCount > 0 ? totalTurnaroundMs / reviewedTicketsCount : 0;
+    const avgTurnaroundMinutes = (avgTurnaroundMs / (1000 * 60)).toFixed(1);
+
+    // Category breakdown initialized with config-driven categories
+    const categoryCounts = {};
+    configCategories.forEach(cat => {
+      categoryCounts[cat] = 0;
+    });
+
+    // Query latest category decision per ticket
+    const ticketCategories = await allQuery(`
+      SELECT a.ticket_id, a.decision
+      FROM audit_trail a
+      INNER JOIN (
+        SELECT ticket_id, MAX(id) as max_id
+        FROM audit_trail
+        GROUP BY ticket_id
+      ) latest ON a.id = latest.max_id
+    `);
+
+    ticketCategories.forEach(row => {
+      try {
+        const dec = JSON.parse(row.decision);
+        if (dec && dec.category) {
+          if (Object.prototype.hasOwnProperty.call(categoryCounts, dec.category)) {
+            categoryCounts[dec.category]++;
+          } else {
+            categoryCounts[dec.category] = 1;
+          }
+        }
+      } catch (e) {
+        // Skip malformed JSON entries
+      }
+    });
+
+    res.json({
+      success: true,
+      stats: {
+        totalTickets,
+        reviewedTickets: reviewedTicketsCount,
+        pendingTickets,
+        approvedCount,
+        overriddenCount,
+        approvalRate,
+        avgTurnaroundMinutes: parseFloat(avgTurnaroundMinutes),
+        categoryBreakdown: categoryCounts,
+        categories: configCategories
+      }
+    });
+  } catch (error) {
+    console.error('Stats computation error:', error.message);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 7. Auditor CSV Log Exporter (FR-9)
 app.get('/api/audit-trail/export', async (req, res) => {
   try {
     const sql = `

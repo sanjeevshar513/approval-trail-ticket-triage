@@ -62,10 +62,19 @@ Return your output strictly as a valid JSON object matching this schema exactly:
 Do not include markdown tags like \`\`\`json or \`\`\` around the JSON object. Return raw JSON text.
 `;
 
-    const result = await model.generateContent(prompt);
-    const text = result.response.text().trim();
-    const cleanText = text.replace(/```json/g, '').replace(/```/g, '').trim();
-    const parsed = JSON.parse(cleanText);
+    // Timeout Promise to catch hanging API requests (15s timeout)
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('Gemini API request timed out after 15 seconds.')), 15000);
+    });
+
+    const apiPromise = (async () => {
+      const result = await model.generateContent(prompt);
+      const text = result.response.text().trim();
+      const cleanText = text.replace(/```json/g, '').replace(/```/g, '').trim();
+      return JSON.parse(cleanText);
+    })();
+
+    const parsed = await Promise.race([apiPromise, timeoutPromise]);
 
     return {
       category: parsed.category || categories[0],
@@ -75,7 +84,10 @@ Do not include markdown tags like \`\`\`json or \`\`\` around the JSON object. R
       draftResponse: parsed.draftResponse || `Hello ${ticket.name},\n\nThank you for contacting support. We have received your ticket regarding: "${ticket.subject}". One of our agents will assist you shortly.`
     };
   } catch (error) {
-    console.error('Gemini API execution failed:', error.message);
+    console.error('Gemini API execution failed or timed out:', error.message);
+    if (process.env.ALLOW_FALLBACK === 'false' || process.env.TEST_FAIL_AI === 'true') {
+      throw error;
+    }
     // Graceful fallback to mock prediction with lower confidence flag
     const mock = getMockTriage(ticket, categories);
     mock.categoryConfidence = 0.5;

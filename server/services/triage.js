@@ -20,10 +20,6 @@ async function createTicket(name, email, subject, description) {
     [id, email, name, subject, description, status, createdAt]
   );
 
-  // Trigger background AI triage asynchronously
-  // We run it and let it handle errors without blocking the customer response
-  triggerTriage(id).catch((err) => console.error(`Background triage failed for ticket ${id}:`, err.message));
-
   return id;
 }
 
@@ -55,9 +51,11 @@ async function triggerTriage(ticketId) {
     // Update ticket state to Pending Approval
     await runQuery('UPDATE tickets SET status = ? WHERE id = ?', ['Pending Approval', ticketId]);
     console.log(`[TRIAGE-OK] Ticket ${ticketId} triaged. Logged and marked Pending Approval.`);
+    return aiDecision;
   } catch (err) {
     console.error(`AI triage engine failed for ticket ${ticketId}:`, err.message);
-    await runQuery('UPDATE tickets SET status = ? WHERE id = ?', ['Pending Triage', ticketId]);
+    await runQuery('UPDATE tickets SET status = ? WHERE id = ?', ['Triage Failed', ticketId]);
+    throw err;
   }
 }
 
