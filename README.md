@@ -89,13 +89,19 @@ npm test
 ## Screenshots
 
 ### Customer Ticket Submission Portal
-[screenshot here]
+<img width="1920" height="1200" alt="Screenshot 2026-08-08 131023" src="https://github.com/user-attachments/assets/5cab1188-63b8-4cdc-925b-fecd3ea23c50" />
+<img width="1920" height="1200" alt="Screenshot 2026-08-08 131459" src="https://github.com/user-attachments/assets/a88d10fc-1247-4cb7-b3ee-6416ab8f3b3b" />
+
 
 ### Agent Approval Queue & HITL Response Editor
-[screenshot here]
+<img width="1920" height="1200" alt="Screenshot 2026-08-08 131621" src="https://github.com/user-attachments/assets/ccc64cef-eaaa-47f1-bb08-176c7fa59f4b" />
+
+
 
 ### Real-Time Performance & Triage Dashboard
-[screenshot here]
+<img width="1920" height="1200" alt="Screenshot 2026-08-08 131850" src="https://github.com/user-attachments/assets/68a35952-38c3-44da-bc23-ac0dcbd07c1f" />
+
 
 ### Compliance Audit Trail Viewer
-[screenshot here]
+<img width="1920" height="1200" alt="Screenshot 2026-08-08 131949" src="https://github.com/user-attachments/assets/74c38f65-2199-44f6-8708-a8ef4a63a6be" />
+
